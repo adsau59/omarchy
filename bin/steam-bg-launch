@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Launch the ap
+steam &
+
+# Wait for the window to appear
+WINDOW_ADDRESS=""
+while [ -z "$WINDOW_ADDRESS" ]; do
+    # Query all windows in JSON format and search for the target class
+    WINDOWS=$(hyprctl clients -j)
+    WINDOW_ADDRESS=$(echo "$WINDOWS" | jq -r --arg class "$TARGET_CLASS" '.[] | select(.class == "steam" and .title == "Steam") | .address')
+    sleep 1
+done
+
+echo "Found window with address: $WINDOW_ADDRESS"
+
+sleep 3
+
+# Close the window gracefully
+hyprctl dispatch closewindow title:Steam
+
+echo "Closed $TARGET_CLASS window."
+
